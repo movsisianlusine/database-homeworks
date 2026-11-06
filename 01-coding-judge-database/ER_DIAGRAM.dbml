@@ -1,0 +1,67 @@
+// Coding Judge Platform: paste into https://dbdiagram.io to draw and export the ER diagram
+
+Table users {
+  user_id number [pk]
+  username varchar2(30) [not null, unique]
+  first_name varchar2(30)
+  last_name varchar2(30)
+  email varchar2(255) [not null, unique]
+  registration_date date
+}
+
+Table languages {
+  language_id number [pk]
+  language_name varchar2(30) [not null, unique]
+  version varchar2(20) [not null]
+  time_multiplier number
+  memory_limit_mb number
+}
+
+Table problems {
+  problem_id number [pk]
+  author_id number [not null, ref: > users.user_id]
+  title varchar2(100) [not null, unique]
+  difficulty varchar2(10)
+  time_limit_ms number
+  points number
+  created_date date
+}
+
+Table tags {
+  tag_id number [pk]
+  tag_name varchar2(30) [not null, unique]
+  description varchar2(255)
+}
+
+Table problem_tags {
+  problem_id number [ref: > problems.problem_id]
+  tag_id number [ref: > tags.tag_id]
+
+  indexes {
+    (problem_id, tag_id) [pk]
+  }
+}
+
+Table submissions {
+  submission_id number [pk]
+  user_id number [not null, ref: > users.user_id]
+  problem_id number [not null, ref: > problems.problem_id]
+  language_id number [not null, ref: > languages.language_id]
+  submit_time date [not null]
+  judge_time date
+  status varchar2(20)
+  code_length number
+}
+
+Table test_results {
+  result_id number [pk]
+  submission_id number [not null, ref: > submissions.submission_id]
+  test_number number [not null]
+  runtime_ms number
+  memory_kb number
+  verdict varchar2(10)
+
+  indexes {
+    (submission_id, test_number) [unique]
+  }
+}
